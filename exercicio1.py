@@ -57,7 +57,7 @@ class Grafo:
 
 class Resolucao:
 
-    def __init__(self, N):
+    def __init__(self, N): 
         self.grafo = Grafo(N, N)
         self.grafo.cria_vertices()
         self.grafo.cria_arestas()
@@ -121,8 +121,8 @@ class Resolucao:
                 if not adjacente.visitado:
                     if adjacente not in nos_abertos:
                         nos_abertos.append(adjacente)
-                        pilha.append((adjacente, passo_a_passo_atual + [adjacente])
-                        )
+                        pilha.append((adjacente, passo_a_passo_atual + [adjacente]))
+
                     arvore_busca.setdefault(vertice_atual, [])
                     arvore_busca[vertice_atual].append(adjacente)
                 else:
