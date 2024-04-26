@@ -81,8 +81,9 @@ class Resolucao:
 
         while fila:
             vertice_atual, passo_a_passo_atual = fila.popleft()
-            nos_abertos.append(vertice_atual)
             vertice_atual.visitado = True
+            if vertice_atual not in nos_abertos:
+                nos_abertos.append(vertice_atual)
 
             if vertice_atual == self.estado_final:
                 self.grafo.reset_visitas()
@@ -90,7 +91,11 @@ class Resolucao:
             
             for adjacente in vertice_atual.adjacentes:
                 if not adjacente.visitado:
-                    fila.append((adjacente, passo_a_passo_atual + [adjacente]))
+                    
+                    if adjacente not in nos_abertos:
+                        nos_abertos.append(adjacente)
+                        fila.append((adjacente, passo_a_passo_atual + [adjacente]))
+
                     arvore_busca.setdefault(vertice_atual, [])
                     arvore_busca[vertice_atual].append(adjacente)
                 else:
@@ -107,8 +112,9 @@ class Resolucao:
 
         while pilha:
             vertice_atual, passo_a_passo_atual = pilha.pop()
-            nos_abertos.append(vertice_atual)
             vertice_atual.visitado = True
+            if vertice_atual not in nos_abertos:
+                nos_abertos.append(vertice_atual)
 
             if vertice_atual == self.estado_final:
                 self.grafo.reset_visitas()
@@ -116,7 +122,11 @@ class Resolucao:
 
             for adjacente in vertice_atual.adjacentes:
                 if not adjacente.visitado:
-                    pilha.append((adjacente, passo_a_passo_atual + [adjacente]))
+
+                    if adjacente not in nos_abertos:
+                        nos_abertos.append(adjacente)
+                        pilha.append((adjacente, passo_a_passo_atual + [adjacente]))
+                        
                     arvore_busca.setdefault(vertice_atual, [])
                     arvore_busca[vertice_atual].append(adjacente)
                 else:
