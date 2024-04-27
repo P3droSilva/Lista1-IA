@@ -338,22 +338,23 @@ estado_final = [["1", "2", "3"],
                 ["8", " ", "4"], 
                 ["7", "6", "5"]]
 
-resolucao = Resolucao(estado_inicial, estado_final)
 
 # Executando a busca em largura e imprimindo o resultado
 
 print("\n\n-----------------BUSCA GULOSA------------------\n\n")
 
+resolucao = Resolucao(estado_inicial, estado_final)
 passo_a_passo, arvore_busca, custo = resolucao.busca_gulosa()
-print_resultados(passo_a_passo, arvore_busca, custo, False)
+print_resultados(passo_a_passo, arvore_busca, custo, True)
 
 # Executando a busca gulosa com heuristica e imprimindo o resultado
 
 
 print("\n\n-----------------BUSCA GULOSA COM HEURISTICA------------------\n\n")
 
+resolucao = Resolucao(estado_inicial, estado_final)
 passo_a_passo, arvore_busca, custo = resolucao.busca_gulosa_heuristica()
-print_resultados(passo_a_passo, arvore_busca, custo, False)
+print_resultados(passo_a_passo, arvore_busca, custo, True)
 
 #Executando a busca A Estrela e imprimindo o resultado
 

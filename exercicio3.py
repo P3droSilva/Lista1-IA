@@ -219,12 +219,10 @@ for vertice in passo_a_passo:
     print("  Fazendeiro {} Lobo {} Ovelha {} Repolho {}".format(vertice.fazendeiro, vertice.lobo, vertice.ovelha, vertice.repolho))
 
 
-if arvore_busca:
-    print("\nÁrvore de busca:")
-    for vertice_pai, vertices_filhos in arvore_busca.items():
-        print("  Vertice pai: Fazendeiro {} Lobo {} Ovelha {} Repolho {}".format(vertice_pai.fazendeiro, vertice_pai.lobo, vertice_pai.ovelha, vertice_pai.repolho))
-        print("    Vertices filhos:")
-        for vertice_filho in vertices_filhos:
-            print("      Fazendeiro {} Lobo {} Ovelha {} Repolho {}".format(vertice_filho.fazendeiro, vertice_filho.lobo, vertice_filho.ovelha, vertice_filho.repolho))
-else:
-    print("Nenhum resultado encontrado.")
+print("\nÁrvore de busca:")
+for vertice, adjacentes in arvore_busca.items():
+    print("  Fazendeiro {} Lobo {} Ovelha {} Repolho {}".format(vertice.fazendeiro, vertice.lobo, vertice.ovelha, vertice.repolho))
+    print("    Adjacentes:")
+    for adjacente in adjacentes:
+        print("      Fazendeiro {} Lobo {} Ovelha {} Repolho {}".format(adjacente.fazendeiro, adjacente.lobo, adjacente.ovelha, adjacente.repolho))
+    print()

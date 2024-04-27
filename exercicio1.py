@@ -125,6 +125,7 @@ class Resolucao:
         self.grafo.reset_visitas()
         return passo_a_passo_atual, arvore_busca
 
+    # Implementação da busca em profundidade
     def busca_em_profundidade(self):
         pilha = [(self.estado_inicial, [])]
         nos_abertos = set()
@@ -132,7 +133,7 @@ class Resolucao:
         arvore_busca = {self.estado_inicial: []}
 
         while pilha:
-            vertice_atual, passo_a_passo_atual = pilha.pop()
+            vertice_atual, passo_a_passo_atual = pilha.pop()    
             vertice_atual.visitado = True
 
             if vertice_atual in nos_abertos:
@@ -173,6 +174,7 @@ class Resolucao:
         return passo_a_passo_atual, arvore_busca
     
 
+# Funções de validação
 def estado_valido(vertice, maxMissionarios, maxCanibais):
     if vertice.missionarios < 0 or vertice.missionarios > maxMissionarios:
         return False
@@ -187,6 +189,8 @@ def estado_valido(vertice, maxMissionarios, maxCanibais):
         return False
     
     return True
+
+# Funções de ação
 
 def levar1M(vertice, maxMissionarios, maxCanibais):
     if vertice.barco == "esq" and vertice.missionarios >= 1:
