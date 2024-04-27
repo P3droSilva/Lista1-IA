@@ -22,6 +22,10 @@ class Grafo:
     def adiciona_aresta(self, vertice_origem, vertice_destino):
         vertice_origem.adiciona_adjacente(vertice_destino)
 
+    def reset_visitas(self):
+        for vertice in self.vertices:
+            vertice.visitado = False
+
     def cria_vertices(self):
         for jarro1 in range(3 + 1):
             for jarro2 in range(4 + 1):
@@ -72,59 +76,89 @@ class Resolucao:
 
     def busca_em_largura(self):
         fila = deque([(self.estado_inicial, [])])
-        nos_abertos = []
-        nos_fechados = []
+        nos_abertos = set()
+        nos_fechados = set()
         arvore_busca = {self.estado_inicial: []}
 
         while fila:
             vertice_atual, passo_a_passo_atual = fila.popleft()
             vertice_atual.visitado = True
-            if vertice_atual not in nos_abertos:
-                nos_abertos.append(vertice_atual)
+            if vertice_atual in nos_abertos:
+                nos_abertos.remove(vertice_atual)
 
             if vertice_atual in self.estados_finais:
-                return passo_a_passo_atual, nos_abertos, nos_fechados, arvore_busca
+                self.grafo.reset_visitas()
+                return passo_a_passo_atual, arvore_busca
             
             for adjacente in vertice_atual.adjacentes:
                 if not adjacente.visitado:
                     if adjacente not in nos_abertos:
-                        nos_abertos.append(adjacente)
+                        nos_abertos.add(adjacente)
                         fila.append((adjacente, passo_a_passo_atual + [adjacente]))
                     
                     arvore_busca.setdefault(vertice_atual, [])
                     arvore_busca[vertice_atual].append(adjacente)
                 else:
-                    nos_fechados.append(adjacente)
+                    nos_fechados.add(adjacente)
 
-        return passo_a_passo_atual ,nos_abertos, nos_fechados, arvore_busca
+            print()
+            print("Nós abertos:")
+            for vertice in nos_abertos:
+                print("  Jarro1 {} Jarro2 {}".format(vertice.jarro1, vertice.jarro2))
+
+            print("Nó atual: Jarro1 {} Jarro2 {}".format(vertice_atual.jarro1, vertice_atual.jarro2))
+
+            print("Nós fechados:")
+            for vertice in nos_fechados:
+                print("  Jarro1 {} Jarro2 {}".format(vertice.jarro1, vertice.jarro2))
+            print()
+
+            nos_fechados.add(vertice_atual)
+
+        self.grafo.reset_visitas()
+        return passo_a_passo_atual, arvore_busca
 
     def busca_em_profundidade(self):
         pilha = [(self.estado_inicial, [])]
-        nos_abertos = []
-        nos_fechados = []
+        nos_abertos = set()
+        nos_fechados = set()
         arvore_busca = {self.estado_inicial: []}
 
         while pilha:
             vertice_atual, passo_a_passo_atual = pilha.pop()
             vertice_atual.visitado = True
-            if vertice_atual not in nos_abertos:
-                nos_abertos.append(vertice_atual)
+            if vertice_atual in nos_abertos:
+                nos_abertos.remove(vertice_atual)
 
             if vertice_atual in self.estados_finais:
-                return passo_a_passo_atual, nos_abertos, nos_fechados, arvore_busca
+                self.grafo.reset_visitas()
+                return passo_a_passo_atual, arvore_busca
 
             for adjacente in vertice_atual.adjacentes:
                 if not adjacente.visitado:
                     if adjacente not in nos_abertos:
-                        nos_abertos.append(adjacente)
+                        nos_abertos.add(adjacente)
                         pilha.append((adjacente, passo_a_passo_atual + [adjacente]))
                     
                     arvore_busca.setdefault(vertice_atual, [])
                     arvore_busca[vertice_atual].append(adjacente)
                 else:
-                    nos_fechados.append(adjacente)
+                    nos_fechados.add(adjacente)
 
-        return passo_a_passo_atual, nos_abertos, nos_fechados, arvore_busca
+            print("Nós abertos:")
+            for vertice in nos_abertos:
+                print("  Jarro1 {} Jarro2 {}".format(vertice.jarro1, vertice.jarro2))
+
+            print("Nó atual: Jarro1 {} Jarro2 {}".format(vertice_atual.jarro1, vertice_atual.jarro2))
+
+            print("Nós fechados:")
+            for vertice in nos_fechados:
+                print("  Jarro1 {} Jarro2 {}".format(vertice.jarro1, vertice.jarro2))
+
+            nos_fechados.add(vertice_atual)
+
+        self.grafo.reset_visitas()
+        return passo_a_passo_atual, arvore_busca
     
 
 def estado_valido(vertice):
@@ -135,18 +169,33 @@ def estado_valido(vertice):
     return True
 
 def enche1(vertice):
+    if vertice.jarro1 == 3:
+        return None
+
     return [3, vertice.jarro2]
 
 def enche2(vertice):
+    if vertice.jarro2 == 4:
+        return None
+
     return [vertice.jarro1, 4]
 
 def esvazia1(vertice):
+    if vertice.jarro1 == 0:
+        return None
+
     return [0, vertice.jarro2]
 
 def esvazia2(vertice):
+    if vertice.jarro2 == 0:
+        return None
+
     return [vertice.jarro1, 0]
 
 def despeja1em2(vertice):
+    if vertice.jarro1 == 0:
+        return None
+
     total = vertice.jarro1 + vertice.jarro2
     if total <= 4:
         return [0, total]
@@ -154,6 +203,9 @@ def despeja1em2(vertice):
         return [total - 4, 4]
 
 def despeja2em1(vertice):
+    if vertice.jarro2 == 0:
+        return None
+
     total = vertice.jarro1 + vertice.jarro2
     if total <= 3:
         return [total, 0]
@@ -165,19 +217,12 @@ def despeja2em1(vertice):
 estado_inicial = [0, 0]
 estado_final = ["X", 2]
 resolucao = Resolucao(estado_inicial, estado_final)
-passo_a_passo, nos_abertos, nos_fechados, arvore_busca = resolucao.busca_em_largura()
+passo_a_passo, arvore_busca = resolucao.busca_em_largura()
 
 print("\nPasso a passo: ")
 for vertice in passo_a_passo:
     print("  Jarro1 {} Jarro2 {}".format(vertice.jarro1, vertice.jarro2))
 
-print("\nNós abertos:")
-for vertice in nos_abertos:
-    print("  Jarro1 {} Jarro2 {}".format(vertice.jarro1, vertice.jarro2))
-
-print("\nNós fechados:")
-for vertice in nos_fechados:
-    print("  Jarro1 {} Jarro2 {}".format(vertice.jarro1, vertice.jarro2))
 
 print("\nÁrvore de busca:")
 for vertice, adjacentes in arvore_busca.items():

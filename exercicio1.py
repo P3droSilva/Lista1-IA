@@ -25,6 +25,10 @@ class Grafo:
     def adiciona_aresta(self, vertice_origem, vertice_destino):
         vertice_origem.adiciona_adjacente(vertice_destino)
 
+    def reset_visitas(self):
+        for vertice in self.vertices:
+            vertice.visitado = False
+
     def cria_vertices(self):
         for missionarios in range(self.maxMissionarios + 1):
             for canibais in range(self.maxCanibais + 1):
@@ -76,59 +80,97 @@ class Resolucao:
 
     def busca_em_largura(self):
         fila = deque([(self.estado_inicial, [])])
-        nos_abertos = []
-        nos_fechados = []
+        nos_abertos = set()
+        nos_fechados = set()
         arvore_busca = {self.estado_inicial: []}
 
         while fila:
             vertice_atual, passo_a_passo_atual = fila.popleft()
             vertice_atual.visitado = True
-            if vertice_atual not in nos_abertos:
-                nos_abertos.append(vertice_atual)
+
+            if vertice_atual in nos_abertos:
+                nos_abertos.remove(vertice_atual)
 
             if vertice_atual == self.estado_final:
-                return passo_a_passo_atual, nos_abertos, nos_fechados, arvore_busca
+                self.grafo.reset_visitas()
+                return passo_a_passo_atual, arvore_busca
             
             for adjacente in vertice_atual.adjacentes:
                 if not adjacente.visitado:
                     if adjacente not in nos_abertos:
-                        nos_abertos.append(adjacente)
+                        nos_abertos.add(adjacente)
                         fila.append((adjacente, passo_a_passo_atual + [adjacente]))
                         
                     arvore_busca.setdefault(vertice_atual, [])
                     arvore_busca[vertice_atual].append(adjacente)
                 else:
-                    nos_fechados.append(adjacente)
+                    nos_fechados.add(adjacente)
 
-        return passo_a_passo_atual ,nos_abertos, nos_fechados, arvore_busca
+            print()
+            print("Nós abertos:")
+            for vertice in nos_abertos:
+                print("  Missionarios {} Canibais {} Barco {}".format(vertice.missionarios, vertice.canibais, vertice.barco))
+
+            print("Nó atual:")
+            print("  Missionarios {} Canibais {} Barco {}".format(vertice_atual.missionarios, vertice_atual.canibais, vertice_atual.barco))
+            
+            print("Nós fechados:")
+            for vertice in nos_fechados:
+                print("  Missionarios {} Canibais {} Barco {}".format(vertice.missionarios, vertice.canibais, vertice.barco))
+            
+            print()
+
+            nos_fechados.add(vertice_atual)
+
+        self.grafo.reset_visitas()
+        return passo_a_passo_atual, arvore_busca
 
     def busca_em_profundidade(self):
         pilha = [(self.estado_inicial, [])]
-        nos_abertos = []
-        nos_fechados = []
+        nos_abertos = set()
+        nos_fechados = set()
         arvore_busca = {self.estado_inicial: []}
 
         while pilha:
             vertice_atual, passo_a_passo_atual = pilha.pop()
             vertice_atual.visitado = True
-            if vertice_atual not in nos_abertos:
-                nos_abertos.append(vertice_atual)
+
+            if vertice_atual in nos_abertos:
+                nos_abertos.remove(vertice_atual)
 
             if vertice_atual == self.estado_final:
-                return passo_a_passo_atual, nos_abertos, nos_fechados, arvore_busca
+                self.grafo.reset_visitas()
+                return passo_a_passo_atual, arvore_busca
 
             for adjacente in vertice_atual.adjacentes:
                 if not adjacente.visitado:
                     if adjacente not in nos_abertos:
-                        nos_abertos.append(adjacente)
+                        nos_abertos.add(adjacente)
                         pilha.append((adjacente, passo_a_passo_atual + [adjacente]))
 
                     arvore_busca.setdefault(vertice_atual, [])
                     arvore_busca[vertice_atual].append(adjacente)
                 else:
-                    nos_fechados.append(adjacente)
+                    nos_fechados.add(adjacente)
 
-        return passo_a_passo_atual, nos_abertos, nos_fechados, arvore_busca
+            print()
+            print("Nós abertos:")
+            for vertice in nos_abertos:
+                print("  Missionarios {} Canibais {} Barco {}".format(vertice.missionarios, vertice.canibais, vertice.barco))
+
+            print("Nó atual:")
+            print("  Missionarios {} Canibais {} Barco {}".format(vertice_atual.missionarios, vertice_atual.canibais, vertice_atual.barco))
+            
+            print("Nós fechados:")
+            for vertice in nos_fechados:
+                print("  Missionarios {} Canibais {} Barco {}".format(vertice.missionarios, vertice.canibais, vertice.barco))
+            
+            print()
+
+            nos_fechados.add(vertice_atual)
+
+        self.grafo.reset_visitas()
+        return passo_a_passo_atual, arvore_busca
     
 
 def estado_valido(vertice, maxMissionarios, maxCanibais):
@@ -194,19 +236,11 @@ def voltar1M1C(vertice, maxMissionarios, maxCanibais):
 # Executando a busca em largura e imprimindo o resultado
 N = 3
 resolucao = Resolucao(N)
-passo_a_passo, nos_abertos, nos_fechados, arvore_busca = resolucao.busca_em_largura()
+passo_a_passo, arvore_busca = resolucao.busca_em_largura()
 
 print("\nPasso a passo: ")
 for vertice in passo_a_passo:
     print("  Esq: Missionarios {} Canibais {}\n  Barco {}\n  Dir: Missionarios {} Canibais {}\n".format(vertice.missionarios, vertice.canibais, vertice.barco, N - vertice.missionarios, N - vertice.canibais))
-
-print("\nNós abertos:")
-for vertice in nos_abertos:
-    print("  Missionarios {} Canibais {} Barco {}".format(vertice.missionarios, vertice.canibais, vertice.barco))
-
-print("\nNós fechados:")
-for vertice in nos_fechados:
-    print("  Missionarios {} Canibais {} Barco {}".format(vertice.missionarios, vertice.canibais, vertice.barco))
 
 print("\nÁrvore de busca:")
 for vertice, adjacentes in arvore_busca.items():

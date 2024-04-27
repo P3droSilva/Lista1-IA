@@ -88,20 +88,21 @@ class Resolucao:
     
     def busca_gulosa(self):
         fila = [(self.estado_inicial, [], 0)]  # Fila de prioridade ordenada pela heurística
-        nos_abertos = []
-        nos_fechados = []
+        nos_abertos = set()
+        nos_fechados = set()
         arvore_busca = {self.estado_inicial: []}
 
         while fila:
             fila.sort(key=lambda x: x[2])
             vertice_atual, passo_a_passo_atual, custo_total = fila.pop(0)
             vertice_atual.visitado = True
-            if vertice_atual not in nos_abertos:
-                nos_abertos.append(vertice_atual)
+            
+            if vertice_atual in nos_abertos:
+                nos_abertos.remove(vertice_atual)
 
             if vertice_atual == self.estado_final:
                 self.grafo.reset_visitas()
-                return passo_a_passo_atual, nos_abertos, nos_fechados, arvore_busca, custo_total
+                return passo_a_passo_atual, arvore_busca, custo_total
             
             self.grafo.cria_arestas(vertice_atual)
 
@@ -111,33 +112,59 @@ class Resolucao:
                     custo_adjacente = adjacente[1]
                     
                     if adjacente[0] not in nos_abertos:
-                        nos_abertos.append(adjacente[0])
+                        nos_abertos.add(adjacente[0])
                         fila.append((adjacente[0], passo_a_passo_atual + [(adjacente[0], custo_adjacente)], custo_total + custo_adjacente))
                         
                     arvore_busca.setdefault(vertice_atual, [])
                     arvore_busca[vertice_atual].append(adjacente[0])
                 else:
-                    nos_fechados.append(adjacente[0])
+                    nos_fechados.add(adjacente[0])
+
+            print()
+            print("Nós abertos:")
+            for vertice in nos_abertos:
+                print(vertice.estado[0])
+                print(vertice.estado[1])
+                print(vertice.estado[2])
+                print()
+
+            print("Nó atual:")
+            print(vertice_atual.estado[0])
+            print(vertice_atual.estado[1])
+            print(vertice_atual.estado[2])
+            print()
+
+            print("Nós fechados:")
+            for vertice in nos_fechados:
+                print(vertice.estado[0])
+                print(vertice.estado[1])
+                print(vertice.estado[2])        
+                print()
+            print()
+
+            nos_fechados.add(vertice_atual)
+
 
         self.grafo.reset_visitas()
-        return passo_a_passo_atual, nos_abertos, nos_fechados, arvore_busca, custo_total
+        return passo_a_passo_atual, arvore_busca, custo_total
     
     def busca_gulosa_heuristica(self):
         fila = [(self.estado_inicial, [], 0)]  # Fila de prioridade ordenada pela heurística
-        nos_abertos = []
-        nos_fechados = []
+        nos_abertos = set()
+        nos_fechados = set()
         arvore_busca = {self.estado_inicial: []}
 
         while fila:
             fila.sort(key=lambda x: self.heuristica(x[0]))
             vertice_atual, passo_a_passo_atual, custo_total = fila.pop(0)
             vertice_atual.visitado = True
-            if vertice_atual not in nos_abertos:
-                nos_abertos.append(vertice_atual)
+            
+            if vertice_atual in nos_abertos:
+                nos_abertos.remove(vertice_atual)
 
             if vertice_atual == self.estado_final:
                 self.grafo.reset_visitas()
-                return passo_a_passo_atual, nos_abertos, nos_fechados, arvore_busca, custo_total
+                return passo_a_passo_atual, arvore_busca, custo_total
             
             self.grafo.cria_arestas(vertice_atual)
 
@@ -147,34 +174,59 @@ class Resolucao:
                     custo_adjacente = adjacente[1]
                     
                     if adjacente[0] not in nos_abertos:
-                        nos_abertos.append(adjacente[0])
+                        nos_abertos.add(adjacente[0])
                         fila.append((adjacente[0], passo_a_passo_atual + [(adjacente[0], custo_adjacente)], custo_total + custo_adjacente))
                         
                     arvore_busca.setdefault(vertice_atual, [])
                     arvore_busca[vertice_atual].append(adjacente[0])
                 else:
-                    nos_fechados.append(adjacente[0])
+                    nos_fechados.add(adjacente[0])
+
+            print()
+            print("Nós abertos:")
+            for vertice in nos_abertos:
+                print(vertice.estado[0])
+                print(vertice.estado[1])
+                print(vertice.estado[2])
+                print()
+
+            print("Nó atual:")
+            print(vertice_atual.estado[0])
+            print(vertice_atual.estado[1])
+            print(vertice_atual.estado[2])
+            print()
+
+            print("Nós fechados:")
+            for vertice in nos_fechados:
+                print(vertice.estado[0])
+                print(vertice.estado[1])
+                print(vertice.estado[2])        
+                print()
+            print()
+
+            nos_fechados.add(vertice_atual)
 
         self.grafo.reset_visitas()
-        return passo_a_passo_atual, nos_abertos, nos_fechados, arvore_busca, custo_total
+        return passo_a_passo_atual, arvore_busca, custo_total
     
 
     def busca_a_estrela(self):
         fila = [(self.estado_inicial, [], 0)]  # Fila de prioridade ordenada pela heurística
-        nos_abertos = []
-        nos_fechados = []
+        nos_abertos = set()
+        nos_fechados = set()
         arvore_busca = {self.estado_inicial: []}
 
         while fila:
             fila.sort(key=lambda x: x[2] + self.heuristica(x[0]))  # Ordena pela soma do custo total ate o momento e da heurística
             vertice_atual, passo_a_passo_atual, custo_total = fila.pop(0)
             vertice_atual.visitado = True
-            if vertice_atual not in nos_abertos:
-                nos_abertos.append(vertice_atual)
+            
+            if vertice_atual in nos_abertos:
+                nos_abertos.remove(vertice_atual)
 
             if vertice_atual == self.estado_final:
                 self.grafo.reset_visitas()
-                return passo_a_passo_atual, nos_abertos, nos_fechados, arvore_busca, custo_total
+                return passo_a_passo_atual, arvore_busca, custo_total
             
             self.grafo.cria_arestas(vertice_atual)
 
@@ -183,16 +235,40 @@ class Resolucao:
                     custo_adjacente = adjacente[1]
 
                     if adjacente[0] not in nos_abertos:
-                        nos_abertos.append(adjacente[0])
+                        nos_abertos.add(adjacente[0])
                         fila.append((adjacente[0], passo_a_passo_atual + [(adjacente[0], custo_adjacente)], custo_total + custo_adjacente))
 
                     arvore_busca.setdefault(vertice_atual, [])
                     arvore_busca[vertice_atual].append(adjacente[0])
                 else:
-                    nos_fechados.append(adjacente[0])
+                    nos_fechados.add(adjacente[0])
+
+            print()
+            print("Nós abertos:")
+            for vertice in nos_abertos:
+                print(vertice.estado[0])
+                print(vertice.estado[1])
+                print(vertice.estado[2])
+                print()
+
+            print("Nó atual:")
+            print(vertice_atual.estado[0])
+            print(vertice_atual.estado[1])
+            print(vertice_atual.estado[2])
+            print()
+
+            print("Nós fechados:")
+            for vertice in nos_fechados:
+                print(vertice.estado[0])
+                print(vertice.estado[1])
+                print(vertice.estado[2])        
+                print()
+            print()
+
+            nos_fechados.add(vertice_atual)
 
         self.grafo.reset_visitas()
-        return passo_a_passo_atual, nos_abertos, nos_fechados, arvore_busca, custo_total
+        return passo_a_passo_atual, arvore_busca, custo_total
 
 
 def gera_estados_possiveis(estado):
@@ -225,7 +301,7 @@ def gera_estados_possiveis(estado):
     return estados_possiveis
     
 
-def print_resultados(passo_a_passo, nos_abertos, nos_fechados, arvore_busca, custo):
+def print_resultados(passo_a_passo, arvore_busca, custo, arvore):
     print("Passo a passo:")
     print("Custo total:", custo)
     print()
@@ -236,19 +312,8 @@ def print_resultados(passo_a_passo, nos_abertos, nos_fechados, arvore_busca, cus
         print("Custo:", passo[1])
         print()
 
-    print("\nNós abertos:")
-    for no in nos_abertos:
-        print(no.estado[0])
-        print(no.estado[1])
-        print(no.estado[2])
-        print()
-
-    print("\nNós fechados:")
-    for no in nos_fechados:
-        print(no.estado[0])
-        print(no.estado[1])
-        print(no.estado[2])
-        print()
+    if arvore == False:
+        return
 
     print("\nÁrvore de busca:")
     for no in arvore_busca:
@@ -276,27 +341,32 @@ estado_final = [["1", "2", "3"],
 resolucao = Resolucao(estado_inicial, estado_final)
 
 # Executando a busca em largura e imprimindo o resultado
-passo_a_passo, nos_abertos, nos_fechados, arvore_busca, custo = resolucao.busca_gulosa()
 
 print("\n\n-----------------BUSCA GULOSA------------------\n\n")
 
-print_resultados(passo_a_passo, nos_abertos, nos_fechados, arvore_busca, custo)
+passo_a_passo, arvore_busca, custo = resolucao.busca_gulosa()
+print_resultados(passo_a_passo, arvore_busca, custo, False)
 
 # Executando a busca gulosa com heuristica e imprimindo o resultado
 
-passo_a_passo, nos_abertos, nos_fechados, arvore_busca, custo = resolucao.busca_gulosa_heuristica()
 
 print("\n\n-----------------BUSCA GULOSA COM HEURISTICA------------------\n\n")
 
-print_resultados(passo_a_passo, nos_abertos, nos_fechados, arvore_busca, custo)
+passo_a_passo, arvore_busca, custo = resolucao.busca_gulosa_heuristica()
+print_resultados(passo_a_passo, arvore_busca, custo, False)
 
-# Executando a busca A Estrela e imprimindo o resultado
+#Executando a busca A Estrela e imprimindo o resultado
 
-passo_a_passo, nos_abertos, nos_fechados, arvore_busca, custo = resolucao.busca_a_estrela()
 
 print("\n\n-----------------BUSCA A ESTRELA------------------\n\n")
 
-print_resultados(passo_a_passo, nos_abertos, nos_fechados, arvore_busca, custo)
+passo_a_passo, arvore_busca, custo = resolucao.busca_a_estrela()
+print_resultados(passo_a_passo, arvore_busca, custo, False)
+
+
+# Executando a busca A Estrela com nova entrada e imprimindo o resultado
+
+print("\n\n-----------------BUSCA A ESTRELA - NOVA ENTRADA ------------------\n\n")
 
 estado_inicial = [["1", "2", "3"], 
                   [" ", "6", "4"], 
@@ -304,10 +374,5 @@ estado_inicial = [["1", "2", "3"],
 
 resolucao = Resolucao(estado_inicial, estado_final)
 
-# Executando a busca A Estrela com nova entrada e imprimindo o resultado
-
-passo_a_passo, nos_abertos, nos_fechados, arvore_busca, custo = resolucao.busca_a_estrela()
-
-print("\n\n-----------------BUSCA A ESTRELA - NOVA ENTRADA ------------------\n\n")
-
-print_resultados(passo_a_passo, nos_abertos, nos_fechados, arvore_busca, custo)
+passo_a_passo, arvore_busca, custo = resolucao.busca_a_estrela()
+print_resultados(passo_a_passo, arvore_busca, custo, True)

@@ -75,65 +75,93 @@ class Resolucao:
 
     def busca_em_largura(self):
         fila = deque([(self.estado_inicial, [])])
-        nos_abertos = []
-        nos_fechados = []
+        nos_abertos = set()
+        nos_fechados = set()
         arvore_busca = {self.estado_inicial: []}
 
         while fila:
             vertice_atual, passo_a_passo_atual = fila.popleft()
             vertice_atual.visitado = True
-            if vertice_atual not in nos_abertos:
-                nos_abertos.append(vertice_atual)
+            if vertice_atual in nos_abertos:
+                nos_abertos.remove(vertice_atual)
 
             if vertice_atual == self.estado_final:
                 self.grafo.reset_visitas()
-                return passo_a_passo_atual, nos_abertos, nos_fechados, arvore_busca
+                return passo_a_passo_atual, arvore_busca
             
             for adjacente in vertice_atual.adjacentes:
                 if not adjacente.visitado:
-                    
                     if adjacente not in nos_abertos:
-                        nos_abertos.append(adjacente)
+                        nos_abertos.add(adjacente)
                         fila.append((adjacente, passo_a_passo_atual + [adjacente]))
-
+                    
                     arvore_busca.setdefault(vertice_atual, [])
                     arvore_busca[vertice_atual].append(adjacente)
                 else:
-                    nos_fechados.append(adjacente)
-        
+                    nos_fechados.add(adjacente)
+
+            print()
+            print("Nós abertos:")
+            for vertice in nos_abertos:
+                print("  Cidade {}".format(vertice.cidade))
+
+            print("Nó atual:")
+            print("  Cidade {}".format(vertice_atual.cidade))
+
+            print("Nós fechados:")
+            for vertice in nos_fechados:
+                print("  Cidade {}".format(vertice.cidade))    
+            print()
+
+            nos_fechados.add(vertice_atual)
+
         self.grafo.reset_visitas()
-        return passo_a_passo_atual ,nos_abertos, nos_fechados, arvore_busca
+        return passo_a_passo_atual, arvore_busca
 
     def busca_em_profundidade(self):
         pilha = [(self.estado_inicial, [])]
-        nos_abertos = []
-        nos_fechados = []
+        nos_abertos = set()
+        nos_fechados = set()
         arvore_busca = {self.estado_inicial: []}
 
         while pilha:
             vertice_atual, passo_a_passo_atual = pilha.pop()
             vertice_atual.visitado = True
-            if vertice_atual not in nos_abertos:
-                nos_abertos.append(vertice_atual)
+            if vertice_atual in nos_abertos:
+                nos_abertos.remove(vertice_atual)
 
             if vertice_atual == self.estado_final:
                 self.grafo.reset_visitas()
-                return passo_a_passo_atual, nos_abertos, nos_fechados, arvore_busca
+                return passo_a_passo_atual,  arvore_busca
 
             for adjacente in vertice_atual.adjacentes:
                 if not adjacente.visitado:
-
                     if adjacente not in nos_abertos:
-                        nos_abertos.append(adjacente)
+                        nos_abertos.add(adjacente)
                         pilha.append((adjacente, passo_a_passo_atual + [adjacente]))
-                        
+                    
                     arvore_busca.setdefault(vertice_atual, [])
                     arvore_busca[vertice_atual].append(adjacente)
                 else:
-                    nos_fechados.append(adjacente)
+                    nos_fechados.add(adjacente)
+
+            print()
+            print("Nós abertos:")
+            for vertice in nos_abertos:
+                print("  Cidade {}".format(vertice.cidade))
+
+            print("Nó atual:")
+            print("  Cidade {}".format(vertice_atual.cidade))
+
+            print("Nós fechados:")
+            for vertice in nos_fechados:
+                print("  Cidade {}".format(vertice.cidade))    
+            print()
+
+            nos_fechados.add(vertice_atual)
 
         self.grafo.reset_visitas()
-        return passo_a_passo_atual, nos_abertos, nos_fechados, arvore_busca
+        return passo_a_passo_atual, arvore_busca
     
 
 def estado_valido(vertice):
@@ -218,20 +246,12 @@ estado_final = "J"
 resolucao = Resolucao(estado_inicial, estado_final)
 
 # Executando a busca em largura e imprimindo o resultado
-passo_a_passo, nos_abertos, nos_fechados, arvore_busca = resolucao.busca_em_largura()
 
 print("\n\n-----------------BUSCA EM LARGURA------------------\n\n")
+passo_a_passo, arvore_busca = resolucao.busca_em_largura()
 
 print("\nPasso a passo: ")
 for vertice in passo_a_passo:
-    print("  Cidade {}".format(vertice.cidade))
-
-print("\nNós abertos:")
-for vertice in nos_abertos:
-    print("  Cidade {}".format(vertice.cidade))
-
-print("\nNós fechados:")
-for vertice in nos_fechados:
     print("  Cidade {}".format(vertice.cidade))
 
 print("\nÁrvore de busca:")
@@ -244,20 +264,12 @@ for vertice, adjacentes in arvore_busca.items():
 
 
 # Executando a busca em profundidade e imprimindo o resultado
-passo_a_passo, nos_abertos, nos_fechados, arvore_busca = resolucao.busca_em_profundidade()
 
 print("\n\n-----------------BUSCA EM PROFUNDIDADE------------------\n\n")
+passo_a_passo, arvore_busca = resolucao.busca_em_profundidade()
 
 print("\nPasso a passo: ")
 for vertice in passo_a_passo:
-    print("  Cidade {}".format(vertice.cidade))
-
-print("\nNós abertos:")
-for vertice in nos_abertos:
-    print("  Cidade {}".format(vertice.cidade))
-
-print("\nNós fechados:")
-for vertice in nos_fechados:
     print("  Cidade {}".format(vertice.cidade))
 
 print("\nÁrvore de busca:")
